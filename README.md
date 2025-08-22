@@ -1,89 +1,141 @@
-﻿# LABIB  Lightweight Agent-Based Intelligent Builder
+﻿# LABIB  Lightweight AgentBased Intelligent Builder
 
-Lightweight agent SDK with optional tools and multi-agent orchestration.
+A minimal, pragmatic agent SDK for Python. Build agents that can call tools, orchestrate multistep workflows, and run via CLI or Streamlit UI.
 
-- Works with Mock (no keys), OpenAI, and Ollama backends
-- Optional MCP tool integration
-- CLI and Streamlit UI shims via labib during rename from majdk
+- Backends: Mock (no keys), OpenAI, Ollama
+- Tools: simple @tool decorator + external tool registry
+- Orchestration: manual, chain/map_reduce, or autoplan
+- UI: labib-ui Streamlit app; CLI: labib
 
-## Install
+> For the project story, goals, and philosophy, see ABOUT.md.
 
-- Editable + all extras:
+---
+
+##  Quickstart (60 seconds)
+
+`python
+from labib import Agent, MockModel
+
+agent = Agent(MockModel())
+print(agent.run("Say hello in one sentence."))
 `
+
+Run with OpenAI:
+`python
+from labib import Agent, OpenAIModel
+agent = Agent(OpenAIModel(api_key="YOUR_KEY", model_name="gpt-4o-mini"))
+print(agent.run("What's the weather style of Paris?"))
+`
+
+Add a tool:
+`python
+from labib import Agent, MockModel, tool
+
+@tool(description="Add two integers")
+def add(a: int, b: int) -> int:
+    return a + b
+
+agent = Agent(MockModel(), tools=[add])
+print(agent.run("Use add to compute 7 and 5."))
+`
+
+---
+
+##  Install
+
+Windows (PowerShell):
+`powershell
+python -m venv .venv
+.\ .venv\Scripts\Activate
 pip install -U pip
 pip install -e .[all]
 `
-- Minimal:
+
+macOS/Linux (bash):
+`ash
+python -m venv .venv
+source .venv/bin/activate
+pip install -U pip
+pip install -e '.[all]'
 `
+
+Minimal install:
+`ash
 pip install -e .
 `
 
-## Quickstart
+---
 
-Run the example:
+##  Examples
+
+- Manual orchestration (Mock):
+`ash
+python examples/orchestration.py
 `
-python examples/quickstart.py
+- Ollama orchestration (no tool-calls):
+`ash
+python examples/orchestration_ollama.py
 `
-Uses labib.Agent, labib.tool, and labib.MockModel. No API keys required.
-
-## CLI
-
-Entrypoint: labib (proxies to original CLI)
-
-Examples:
+- Auto orchestration:
+`ash
+python examples/auto_orchestration.py --goal "Summarize recent LLM evals" --model-type mock --mode sequential
 `
+- Autoplan (model proposes agents):
+`ash
+python examples/auto_orchestration.py --goal "Compare 3 frameworks" --model-type openai --openai-model gpt-4o-mini --auto-plan
+`
+- MCP (optional):
+`ash
+pip install -e '.[mcp]'
+python examples/auto_orchestration.py --goal "Research X" --model-type openai --sources builtin,mcp --mcp-cmd "your_mcp_server --flag"
+`
+
+Notes:
+- Ollama backend here does not make toolcalls; MCP tools wont be invoked with Ollama.
+- APIs are reexported via labib for a smooth rename from majdk. See src/labib/__init__.py.
+
+---
+
+##  CLI and UI
+
+CLI:
+`ash
 labib --model-type mock --interactive
 labib --model-type openai --api-key YOUR_KEY --model gpt-4o-mini --query "Hello"
 labib --model-type ollama --base-url http://localhost:11434 --model gemma3:1b --interactive
 `
 
-## Examples
-
-- Manual orchestration (Mock):
-`
-python examples/orchestration.py
-`
-- Ollama orchestration (no tool-calls):
-`
-python examples/orchestration_ollama.py
-`
-- Auto orchestration:
-`
-python examples/auto_orchestration.py --goal "Summarize recent LLM evals" --model-type mock --mode sequential
-`
-- Auto-plan (lets the model propose agents):
-`
-python examples/auto_orchestration.py --goal "Compare 3 frameworks" --model-type openai --openai-model gpt-4o-mini --auto-plan
-`
-- MCP (optional):
-`
-pip install -e .[mcp]
-python examples/auto_orchestration.py --goal "Research X" --model-type openai --sources builtin,mcp --mcp-cmd "your_mcp_server --flag"
+Streamlit UI:
+`ash
+pip install -e '.[ui]'
+labib-ui
 `
 
-Notes:
-- Ollama backend here does not make tool-calls; MCP tools wont be invoked with Ollama.
-- APIs are re-exported via labib for a smooth rename from majdk. See src/labib/__init__.py.
+---
 
-## Dev and Build
+##  Features
 
-`
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -e .[dev]
-pytest -q
-`
-Build and verify:
-`
-python -m pip install build twine
-python -m build
-twine check dist\*
-`
+- Simple tool API: @tool decorator with autoschema
+- External tools with explicit JSON schema + handler
+- Memory logging with compact step traces
+- Orchestrator helpers: chain, map_reduce
+- Autoplan mode (optional)
 
-## Project URLs
+---
+
+##  Roadmap
+
+- Better planner JSON validation and error messages
+- Tool invocation with Ollama (when available upstream)
+- More builtin tools and integrations
+
+---
+
+##  Project URLs
 
 - Repo: https://github.com/majdaitech/labib
+- About: https://github.com/majdaitech/labib/blob/main/ABOUT.md
 
-## License
+##  License
 
-Apache-2.0
+Apache2.0
