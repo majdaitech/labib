@@ -1,4 +1,4 @@
-"""Streamlit web UI for MAJD Agent Kit"""
+﻿"""Streamlit web UI for MAJD Agent Kit"""
 
 import streamlit as st
 import json
@@ -35,16 +35,16 @@ def main():
     """Main Streamlit app"""
     st.set_page_config(
         page_title="MAJD Agent Kit",
-        page_icon="🤖",
+        page_icon="ðŸ¤–",
         layout="wide"
     )
     
-    st.title("🤖 MAJD Agent Kit")
+    st.title("ðŸ¤– MAJD Agent Kit")
     st.markdown("*Lightweight AI Agent with Tool Support*")
     
     # Sidebar for configuration
     with st.sidebar:
-        st.header("⚙️ Configuration")
+        st.header("âš™ï¸ Configuration")
         
         model_type = st.selectbox(
             "Model Type",
@@ -77,7 +77,7 @@ def main():
             )
         
         st.markdown("---")
-        if st.button("🧹 Clear Chat History"):
+        if st.button("ðŸ§¹ Clear Chat History"):
             st.session_state.messages = []
             st.rerun()
     
@@ -112,7 +112,7 @@ def main():
                     })
                     
                     # Show agent steps in expander
-                    with st.expander("🔍 Agent Steps"):
+                    with st.expander("ðŸ” Agent Steps"):
                         steps = agent.memory.get_steps()
                         for step in steps[-10:]:  # Show last 10 steps
                             st.json({
@@ -124,8 +124,8 @@ def main():
     # Footer
     st.markdown("---")
     st.markdown(
-        "Built with **MAJD Agent Kit** • "
-        "[GitHub](https://github.com/your-username/majd-agent-kit) • "
+        "Built with **MAJD Agent Kit** â€¢ "
+        "[GitHub](https://github.com/majdaitech/labib) â€¢ "
         "Apache 2.0 License"
     )
 
